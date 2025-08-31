@@ -9,19 +9,33 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   thumbnailsContainer.addEventListener('click', function (e) {
-    const target = e.target;
+    const anchor = e.target.closest('a');
+    let img = null;
+    let fullSrc = '';
 
-    if (target.tagName === 'IMG') {
-      mainImage.src = target.dataset.full || target.src;
-      mainImage.alt = target.alt || '';
-    } else if (target.tagName === 'A' && target.querySelector('img')) {
-      const img = target.querySelector('img');
+    if (anchor && thumbnailsContainer.contains(anchor)) {
+      img = anchor.querySelector('img');
 
-      if (img) {
-        mainImage.src = img.dataset.full || img.src;
+      fullSrc =
+        anchor.getAttribute('href') ||
+        (img && img.dataset.full) ||
+        (img && img.src);
+
+      if (img && fullSrc) {
+        mainImage.src = fullSrc;
         mainImage.alt = img.alt || '';
+        e.preventDefault();
       }
+
+      return;
     }
-    e.preventDefault();
+
+    img = e.target.closest('img');
+
+    if (img && thumbnailsContainer.contains(img)) {
+      fullSrc = img.dataset.full || img.src;
+      mainImage.src = fullSrc;
+      mainImage.alt = img.alt || '';
+    }
   });
 });
